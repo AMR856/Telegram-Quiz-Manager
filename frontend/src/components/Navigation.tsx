@@ -1,6 +1,9 @@
 'use client'
 
+import type { ReactNode } from 'react'
+import { LayoutDashboard, KeyRound, ImageIcon, HelpCircle, Briefcase } from 'lucide-react'
 import { TAB_IDS } from '@/lib/constants'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 type TabId = (typeof TAB_IDS)[keyof typeof TAB_IDS]
 
@@ -9,50 +12,29 @@ interface NavigationProps {
   onTabChange: (tabId: TabId) => void
 }
 
-const TABS: Array<{ id: TabId; label: string }> = [
-  { id: TAB_IDS.DASHBOARD, label: 'Dashboard' },
-  { id: TAB_IDS.AUTH, label: 'Auth' },
-  { id: TAB_IDS.IMAGES, label: 'Images' },
-  { id: TAB_IDS.QUIZZES, label: 'Quizzes' },
-  { id: TAB_IDS.JOBS, label: 'Jobs' },
+const TABS: Array<{ id: TabId; label: string; icon: ReactNode }> = [
+  { id: TAB_IDS.DASHBOARD, label: 'Dashboard', icon: <LayoutDashboard className="h-4 w-4" /> },
+  { id: TAB_IDS.AUTH, label: 'Auth', icon: <KeyRound className="h-4 w-4" /> },
+  { id: TAB_IDS.IMAGES, label: 'Images', icon: <ImageIcon className="h-4 w-4" /> },
+  { id: TAB_IDS.QUIZZES, label: 'Quizzes', icon: <HelpCircle className="h-4 w-4" /> },
+  { id: TAB_IDS.JOBS, label: 'Jobs', icon: <Briefcase className="h-4 w-4" /> },
 ]
 
 export function Navigation({ activeTab, onTabChange }: NavigationProps) {
   return (
-    <nav className="border-b border-slate-800 bg-slate-900/50">
-      <div className="mx-auto flex w-full max-w-7xl flex-wrap gap-2 p-3">
-        {TABS.map(({ id, label }) => (
-          <TabButton
-            key={id}
-            isActive={activeTab === id}
-            label={label}
-            onClick={() => onTabChange(id)}
-          />
-        ))}
+    <nav className="border-b border-slate-800 bg-slate-900/60">
+      <div className="mx-auto w-full max-w-7xl px-5">
+        <Tabs value={activeTab} onValueChange={(value) => onTabChange(value as TabId)} className="w-full">
+          <TabsList className="gap-6">
+            {TABS.map(({ id, label, icon }) => (
+              <TabsTrigger key={id} value={id} className="gap-2">
+                {icon}
+                {label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       </div>
     </nav>
-  )
-}
-
-interface TabButtonProps {
-  isActive: boolean
-  label: string
-  onClick: () => void
-}
-
-function TabButton({ isActive, label, onClick }: TabButtonProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={[
-        'px-4 py-2 rounded-lg border text-sm font-semibold transition',
-        isActive
-          ? 'border-cyan-400/70 text-cyan-300 bg-cyan-500/10'
-          : 'border-slate-700 text-slate-300 hover:text-white hover:border-slate-500',
-      ].join(' ')}
-    >
-      {label}
-    </button>
   )
 }

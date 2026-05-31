@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Telegram Quiz Sender',
-  description: 'Next.js panel for Telegram quiz backend routes',
+  title: 'Telegram Quiz Manager',
+  description: 'Manage your Telegram bot quizzes with ease',
 }
 
 export default function RootLayout({

@@ -242,6 +242,33 @@ export function useAppState() {
     }
   }, [imageCarousel, runAction, toast, getApiKeyOrThrow])
 
+  const deleteImageById = useCallback(
+    async (publicId: string) => {
+      const trimmed = publicId.trim()
+      if (!trimmed) {
+        toast.error('No image id provided')
+        return
+      }
+
+      const result = await runAction('DELETE /images/:publicId', () =>
+        apiClient.request(`/images/${encodeId(trimmed)}`, {
+          method: 'DELETE',
+          headers: {
+            'x-api-key': getApiKeyOrThrow(),
+          },
+        }),
+      )
+
+      if (result?.ok) {
+        setImages((prev) => prev.filter((item) => item.publicId !== trimmed))
+        imageCarousel.setActiveIndex(0)
+        setImagesCursor('')
+        toast.success('Image deleted')
+      }
+    },
+    [runAction, toast, getApiKeyOrThrow, imageCarousel],
+  )
+
   const sendQuizzes = useCallback(async () => {
     await runAction('POST /quizzes/send', async () => {
       const parsed = JSON.parse(quizzes)
@@ -396,6 +423,7 @@ export function useAppState() {
     uploadMany,
     fetchImages,
     deleteActiveImage,
+    deleteImageById,
     ...imageCarousel,
 
     quizzes,

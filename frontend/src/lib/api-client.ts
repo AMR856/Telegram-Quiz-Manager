@@ -1,30 +1,30 @@
-import { ApiResponse } from '@/types'
+import { ApiResponse } from "@/types";
 
 const FALLBACK_API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || 'http://localhost:3000'
+  process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || "http://localhost:3000";
 
 class ApiClient {
-  private baseUrl: string = FALLBACK_API_BASE_URL
+  private baseUrl: string = FALLBACK_API_BASE_URL;
 
   setBaseUrl(url: string): void {
-    this.baseUrl = (url || '').trim() || FALLBACK_API_BASE_URL
+    this.baseUrl = (url || "").trim() || FALLBACK_API_BASE_URL;
   }
 
   async request<T = unknown>(
     path: string,
     options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
-    const url = `${this.baseUrl}${path}`
+    const url = `${this.baseUrl}${path}`;
 
     try {
-      const response = await fetch(url, options)
-      const raw = await response.text()
+      const response = await fetch(url, options);
+      const raw = await response.text();
 
-      let data: T | string = raw
+      let data: T | string = raw;
       try {
-        data = raw ? (JSON.parse(raw) as T) : (null as T)
+        data = raw ? (JSON.parse(raw) as T) : (null as T);
       } catch {
-        data = raw as T
+        data = raw as T;
       }
 
       return {
@@ -32,11 +32,11 @@ class ApiClient {
         status: response.status,
         url,
         data,
-      }
+      };
     } catch (error) {
       throw new Error(
-        `Request failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      )
+        `Request failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -45,9 +45,9 @@ class ApiClient {
     headers: HeadersInit = {},
   ): Promise<ApiResponse<T>> {
     return this.request<T>(path, {
-      method: 'GET',
+      method: "GET",
       headers,
-    })
+    });
   }
 
   async post<T = unknown>(
@@ -56,11 +56,11 @@ class ApiClient {
     headers: HeadersInit = {},
   ): Promise<ApiResponse<T>> {
     return this.request<T>(path, {
-      method: 'POST',
+      method: "POST",
       headers,
       body,
-    })
+    });
   }
 }
 
-export const apiClient = new ApiClient()
+export const apiClient = new ApiClient();

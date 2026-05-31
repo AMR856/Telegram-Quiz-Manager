@@ -1,10 +1,15 @@
 import { ImageData, HealthState } from '@/types'
 
+export function cn(...classes: Array<string | false | null | undefined>): string {
+  return classes.filter(Boolean).join(' ')
+}
+
 /**
  * Format JSON with indentation
  */
 export function formatJson(value: unknown): string {
-  return JSON.stringify(value, null, 2)
+  const result = JSON.stringify(value, null, 2)
+  return typeof result === 'string' ? result : '{}'
 }
 
 /**
@@ -125,4 +130,14 @@ export function setLocalStorage(key: string, value: string): void {
   } catch {
     console.warn(`Failed to set localStorage key: ${key}`)
   }
+}
+
+export function formatDuration(totalSeconds: number): string {
+  const safeSeconds = Math.max(0, Math.floor(totalSeconds))
+  const hours = Math.floor(safeSeconds / 3600)
+  const minutes = Math.floor((safeSeconds % 3600) / 60)
+  const seconds = safeSeconds % 60
+
+  const pad = (value: number) => String(value).padStart(2, '0')
+  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
 }

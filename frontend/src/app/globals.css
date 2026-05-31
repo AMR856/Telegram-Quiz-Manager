@@ -1,26 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer components {
-  .card {
-    @apply rounded-lg border border-slate-700 bg-slate-900/50 p-4;
-  }
-
-  .input {
-    @apply rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm outline-none ring-cyan-400/50 focus:ring;
-  }
-
-  .button-primary {
-    @apply rounded-lg border border-cyan-400/50 bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-
   .gradient-text {
-    @apply bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent;
-  }
-
-  .toast {
-    @apply text-white;
+    @apply bg-gradient-to-r from-cyan-300 via-sky-200 to-cyan-400 bg-clip-text text-transparent;
   }
 }
 
@@ -30,6 +16,34 @@ html {
 
 body {
   @apply antialiased;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+code,
+pre {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+.json-key {
+  color: #67e8f9;
+}
+
+.json-string {
+  color: #a7f3d0;
+}
+
+.json-number {
+  color: #fbbf24;
+}
+
+.json-boolean {
+  color: #f472b6;
+}
+
+.json-null {
+  color: #94a3b8;
 }
 
 /* Scrollbar styling */

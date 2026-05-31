@@ -1,6 +1,8 @@
 'use client'
 
 import { QuickStat } from '@/types'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 interface DashboardTabProps {
   healthLabel: string
@@ -8,29 +10,53 @@ interface DashboardTabProps {
 }
 
 export function DashboardTab({ healthLabel, quickStats }: DashboardTabProps) {
-  return (
-    <section className="card">
-      <h2 className="mb-3 text-lg font-semibold">Backend Health</h2>
-      <p className="text-sm text-slate-300">
-        Status: <span className="font-semibold text-cyan-300">{healthLabel}</span>
-      </p>
-      <p className="mt-2 text-xs text-slate-400">Checked every 5 seconds.</p>
+  const getTone = (value: string) => {
+    const normalized = value.toLowerCase()
+    if (normalized.includes('down') || normalized.includes('missing')) return 'danger'
+    if (normalized.includes('idle') || normalized.includes('none') || normalized === '0')
+      return 'warning'
+    return 'success'
+  }
 
-      <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+  const getBadgeLabel = (value: string) => {
+    const normalized = value.toLowerCase()
+    if (normalized.includes('down')) return 'down'
+    if (normalized.includes('missing')) return 'missing'
+    if (normalized.includes('idle')) return 'idle'
+    if (normalized.includes('none')) return 'none'
+    return 'ok'
+  }
+
+  return (
+    <Card className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold">Backend Health</h2>
+          <p className="text-sm text-slate-400">Checked every 5 seconds.</p>
+        </div>
+        <Badge variant="default" className="uppercase">
+          {healthLabel}
+        </Badge>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {quickStats.map((item) => (
           <article
             key={item.label}
-            className="rounded-xl border border-slate-700 bg-slate-900/70 p-3"
+            className="rounded-2xl border border-slate-800 bg-slate-950/40 p-4"
           >
-            <p className="text-[11px] uppercase tracking-wide text-slate-400">
+            <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
               {item.label}
             </p>
-            <p className="mt-1 truncate text-sm font-semibold text-cyan-300">
-              {item.value}
-            </p>
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <p className="truncate text-sm font-semibold text-slate-100">
+                {item.value}
+              </p>
+              <Badge variant={getTone(item.value)}>{getBadgeLabel(item.value)}</Badge>
+            </div>
           </article>
         ))}
       </div>
-    </section>
+    </Card>
   )
 }
