@@ -63,7 +63,9 @@ export function QuizzesTab({
       <div className="grid gap-2">
         <div className="flex items-center gap-2 text-sm text-slate-300">
           <span>Retry wrong answer after</span>
-          <Info className="h-3 w-3 text-slate-500" title="Minutes before retrying incorrect answers." />
+          <span title="Minutes before retrying incorrect answers.">
+            <Info className="h-3 w-3 text-slate-500" />
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <Input
