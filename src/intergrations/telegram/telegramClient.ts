@@ -140,6 +140,30 @@ export class TelegramClient {
     }
   }
 
+  public async sendAnimation(
+    chatId: string | number,
+    animation: string,
+    payload: Record<string, any> = {},
+  ): Promise<any> {
+    if (this.isLocalFile(animation)) {
+      return this.sendAnimationMultipart(
+        chatId,
+        fs.createReadStream(animation),
+        payload,
+        {
+          filename: path.basename(animation),
+        },
+      );
+    }
+
+    return this.post("sendAnimation", {
+      chat_id: chatId,
+      animation,
+      ...payload,
+      ...(this.isChannel ? { disable_notification: false } : {}),
+    });
+  }
+
   private isLocalFile(filePath: string): boolean {
     try {
       return path.isAbsolute(filePath) && fs.existsSync(filePath);
@@ -207,6 +231,46 @@ export class TelegramClient {
       maxBodyLength: Infinity,
       maxContentLength: Infinity,
     });
+
+    return response.data;
+  }
+
+  private async sendAnimationMultipart(
+    chatId: string | number,
+    animationValue: any,
+    payload: Record<string, any> = {},
+    options: PhotoOptions = {},
+  ): Promise<any> {
+    const formData = new FormData();
+
+    formData.append("chat_id", String(chatId));
+    formData.append(
+      "animation",
+      animationValue,
+      options.filename ? { filename: options.filename } : undefined,
+    );
+
+    Object.entries(payload).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        const formattedValue =
+          typeof value === "object" ? JSON.stringify(value) : value;
+        formData.append(key, formattedValue);
+      }
+    });
+
+    if (this.isChannel) {
+      formData.append("disable_notification", "false");
+    }
+
+    const response = await axios.post(
+      `${this.baseUrl}/sendAnimation`,
+      formData,
+      {
+        headers: formData.getHeaders(),
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
+      },
+    );
 
     return response.data;
   }

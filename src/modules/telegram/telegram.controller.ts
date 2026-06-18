@@ -5,16 +5,19 @@ import { UserModel } from "../auth/auth.model";
 import { QuizAnswerTracker } from "../../services/quizAnswerTracker";
 import { LoggerService } from "../../utils/logger";
 import { TelegramClient } from "../../intergrations/telegram/telegramClient";
+import path from "path";
 
 const MESSAGES_LOG_FILE = "logs/messages.log";
+const HI_GIF_PATH = path.resolve(__dirname, "../../../data/hi.gif");
 const TELEGRAM_PROFILE_COMMAND_RESPONSES: Record<string, string> = {
   github: "📌 GitHub: https://github.com/AMR856",
   start: "Hello this is Amr Alnus Telegram quiz manager, hope you'll enjoy it.",
   linkedin: "💼 LinkedIn: https://www.linkedin.com/in/amr-alnus-64a4ab244/",
   portfolio: "🌐 Portfolio: https://amralnus-backend.me/",
+  "company-profile": "🏢 Company Profile: https://soulstudio.dev/",
   about: `👤 <b>About Me</b>
 
-Backend Engineer | Node.js | NestJS
+CEO@SoulStudioDev| Backend Engineer | Node.js | NestJS
 Electronics & Communication Engineering Student
 
 <a href="https://github.com/AMR856">GitHub</a> |
@@ -25,6 +28,7 @@ Electronics & Communication Engineering Student
 /github - View my GitHub profile
 /linkedin - View my LinkedIn profile
 /portfolio - View my portfolio website
+/company-profile - View company profile website
 /about - Get information about me
 /help - Show this menu`,
 };
@@ -55,7 +59,7 @@ export class TelegramController {
       const message = update?.message;
       const messageText = String(message?.text || "").trim();
       const isStartCommand = /^\/start(?:\s|$)/i.test(messageText);
-      const commandMatch = messageText.match(/^\/(\w+)(?:@\w+)?(?:\s|$)/i);
+      const commandMatch = messageText.match(/^\/([a-z0-9_-]+)(?:@\w+)?(?:\s|$)/i);
       const command = String(commandMatch?.[1] || "").toLowerCase();
       const messageFromId = String(message?.from?.id || "").trim();
       const isPrivateChat = String(message?.chat?.type || "") === "private";
@@ -72,20 +76,22 @@ export class TelegramController {
       }
 
       if (command) {
-        const responseMessage =
-          TELEGRAM_PROFILE_COMMAND_RESPONSES[command] ||
-          "Command not found. Type /help for available commands.";
+        const responseMessage = TELEGRAM_PROFILE_COMMAND_RESPONSES[command];
 
         const telegramClient = new TelegramClient({
           baseUrl: `https://api.telegram.org/bot${user.botToken}`,
           isChannel: user.isChannel,
         });
 
-        await telegramClient.sendMessage(message?.chat?.id, responseMessage, {
-          parseMode: TELEGRAM_PROFILE_COMMANDS_WITH_HTML.has(command)
-            ? "HTML"
-            : undefined,
-        });
+        if (responseMessage) {
+          await telegramClient.sendMessage(message?.chat?.id, responseMessage, {
+            parseMode: TELEGRAM_PROFILE_COMMANDS_WITH_HTML.has(command)
+              ? "HTML"
+              : undefined,
+          });
+        } else {
+          await telegramClient.sendAnimation(message?.chat?.id, HI_GIF_PATH);
+        }
 
         return res
           .status(200)
