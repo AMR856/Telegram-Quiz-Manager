@@ -61,7 +61,7 @@ interface PreparedQuiz {
   hasLongOption: boolean;
   question: string;
   explanation: string;
-  markdownSpoilerExplanation: string;
+  markdownExplanation: string;
   numberedOptions: string[];
   shortPollOptions: string[];
   needsSplitMessage: boolean;
@@ -212,9 +212,9 @@ export class QuizSender {
       (option: string) => (option || "").length > POLL_OPTION_CHAR_LIMIT,
     );
 
-    const markdownSpoilerExplanation = `||${escapeMarkdownV2(explanation)}||`;
+    const markdownExplanation = escapeMarkdownV2(explanation);
     const canInlineExplanation =
-      markdownSpoilerExplanation.length <= POLL_EXPLANATION_CHAR_LIMIT &&
+      markdownExplanation.length <= POLL_EXPLANATION_CHAR_LIMIT &&
       question.length <= POLL_QUESTION_CHAR_LIMIT &&
       !hasLongOption;
 
@@ -224,7 +224,7 @@ export class QuizSender {
       hasLongOption,
       question,
       explanation,
-      markdownSpoilerExplanation,
+      markdownExplanation,
       numberedOptions: options.map((option: string, index: number) => {
         const label = OPTION_LABELS[index] || String(index + 1);
         return `${label}- ${option}`;
@@ -252,7 +252,7 @@ export class QuizSender {
       options: preparedQuiz.originalOptions,
       type: "quiz",
       correct_option_id: quiz.correctAnswerId,
-      explanation: preparedQuiz.markdownSpoilerExplanation,
+      explanation: preparedQuiz.markdownExplanation,
       explanation_parse_mode: "MarkdownV2",
       is_anonymous: this.isChannel,
       allows_multiple_answers: false,
