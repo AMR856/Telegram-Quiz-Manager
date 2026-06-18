@@ -8,7 +8,12 @@ import { TelegramClient } from "../../intergrations/telegram/telegramClient";
 import path from "path";
 
 const MESSAGES_LOG_FILE = "logs/messages.log";
-const HI_GIF_PATH = path.resolve(__dirname, "../../../data/hi.gif");
+// Local GIF used as a friendly greeting animation.
+// Note: we currently send this via `sendAnimation`. If animation uploads are
+// unsupported or fail for some chats, a fallback strategy (e.g. sendMessage
+// with a static GIF link or sendDocument) should be handled by the
+// `TelegramClient` implementation or added here as needed.
+// const HI_GIF_PATH = path.resolve(__dirname, "../../../data/hi.gif");
 const TELEGRAM_PROFILE_COMMAND_RESPONSES: Record<string, string> = {
   github: "📌 GitHub: https://github.com/AMR856",
   start: "Hello this is Amr Alnus Telegram quiz manager, hope you'll enjoy it.",
@@ -90,7 +95,11 @@ export class TelegramController {
               : undefined,
           });
         } else {
-          await telegramClient.sendAnimation(message?.chat?.id, HI_GIF_PATH);
+          // Animations are temporarily disabled. Skip sending the greeting
+          // animation for now to avoid accidental uploads or rate-limit issues.
+          LoggerService.info(
+            `Skipping greeting animation for chat ${String(message?.chat?.id)}`,
+          );
         }
 
         return res
